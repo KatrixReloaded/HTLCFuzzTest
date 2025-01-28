@@ -122,7 +122,7 @@ contract TestHTLC {
 
     /**
      * @dev Tests the `HTLC.sol::redeem()` function
-     * @param all same params required for `test_initiate()`
+     * @notice all same params required for `test_initiate()`
      */
     function test_redeem(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
@@ -145,7 +145,7 @@ contract TestHTLC {
     
     /**
      * @dev Tests the `HTLC.sol::redeem()` function after timelock period
-     * @param all same params required for `test_initiate()`
+     * @notice all same params required for `test_initiate()`
      * @notice Runs successfully even after the timelock period has expired
      */
     function test_redeem_after_timelock(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
@@ -168,7 +168,7 @@ contract TestHTLC {
 
     /**
      * @dev Tests the `HTLC.sol::refund()` function after timelock period (normal case)
-     * @param all same params required for `test_initiate()`
+     * @notice all same params required for `test_initiate()`
      */
     function test_refund(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
@@ -189,7 +189,7 @@ contract TestHTLC {
 
     /**
      * @dev Tests the `HTLC.sol::refund()` function after order is fulfilled
-     * @param all same params required for `test_initiate()`
+     * @notice all same params required for `test_initiate()`
      */
     function test_refund_fail_isFulfilled(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
@@ -210,7 +210,7 @@ contract TestHTLC {
     
     /**
      * @dev Tests the `HTLC.sol::refund()` function before timelock period
-     * @param all same params required for `test_initiate()`
+     * @notice all same params required for `test_initiate()`
      */
     function test_refund_fail_not_expired(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
