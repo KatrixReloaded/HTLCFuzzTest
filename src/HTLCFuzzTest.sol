@@ -20,15 +20,6 @@ contract TestHTLC {
     HTLC public htlc;
     MockERC20 public immutable token;
 
-    struct Order {
-        bool isFulfilled;
-        address initiator;
-        address redeemer;
-        uint256 initiatedAt;
-        uint256 timelock;
-        uint256 amount;
-    }
-
     /** @dev used to avoid duplicate orders by the contract */
     uint256 public randomizer = 0;
 
@@ -131,6 +122,7 @@ contract TestHTLC {
 
     /**
      * @dev Tests the `HTLC.sol::redeem()` function
+     * @param all same params required for `test_initiate()`
      */
     function test_redeem(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
@@ -138,6 +130,8 @@ contract TestHTLC {
         (bool isFulfilled,,,,,) = htlc.orders(orderID);
         uint256 initBalanceRedeemer = token.balanceOf(redeemer);
 
+        /// @notice Assuming that the redeemer address would call the `redeem()` function themselves. 
+        /// @notice There isn't a check to verify who is calling the function tho
         hevm.prank(redeemer);
         try htlc.redeem(orderID, abi.encodePacked(secretHash, randomizer-1)) {
             // Post-conditions
@@ -151,6 +145,7 @@ contract TestHTLC {
     
     /**
      * @dev Tests the `HTLC.sol::redeem()` function after timelock period
+     * @param all same params required for `test_initiate()`
      * @notice Runs successfully even after the timelock period has expired
      */
     function test_redeem_after_timelock(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
@@ -171,6 +166,10 @@ contract TestHTLC {
         }
     }
 
+    /**
+     * @dev Tests the `HTLC.sol::refund()` function after timelock period (normal case)
+     * @param all same params required for `test_initiate()`
+     */
     function test_refund(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
 
@@ -188,6 +187,10 @@ contract TestHTLC {
         }
     }
 
+    /**
+     * @dev Tests the `HTLC.sol::refund()` function after order is fulfilled
+     * @param all same params required for `test_initiate()`
+     */
     function test_refund_fail_isFulfilled(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
 
@@ -205,6 +208,10 @@ contract TestHTLC {
         }
     }
     
+    /**
+     * @dev Tests the `HTLC.sol::refund()` function before timelock period
+     * @param all same params required for `test_initiate()`
+     */
     function test_refund_fail_not_expired(address redeemer, uint256 timelock, uint256 amount, bytes32 secretHash) public {
         bytes32 orderID = test_initiate(redeemer, timelock, amount, secretHash);
         (, address initiator,, uint256 initiatedAt,,) = htlc.orders(orderID);
